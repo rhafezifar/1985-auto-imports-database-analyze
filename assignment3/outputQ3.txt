@@ -1,0 +1,38 @@
+statistic for length attribute: {'min': [141.1], 'max': [208.1], 'mean': [174.04926829268288], 'range': [67.0]}
+statistic for compression-ratio attribute: {'min': [7.0], 'max': [23.0], 'mean': [10.142536585365855], 'range': [16.0]}
+count    205.000000
+mean       0.491780
+std        0.184139
+min        0.000000
+25%        0.376119
+50%        0.479104
+75%        0.626866
+max        1.000000
+Name: Min-max Length, dtype: float64
+count    2.050000e+02
+mean     3.674026e-15
+std      1.000000e+00
+min     -2.670706e+00
+25%     -6.281176e-01
+50%     -6.883752e-02
+75%      7.336078e-01
+max      2.759985e+00
+Name: z-score Length, dtype: float64
+count    205.000000
+mean       0.196409
+std        0.248253
+min        0.000000
+25%        0.100000
+50%        0.125000
+75%        0.150000
+max        1.000000
+Name: Min-max compression-ratio, dtype: float64
+count    2.050000e+02
+mean    -3.639365e-16
+std      1.000000e+00
+min     -7.911643e-01
+25%     -3.883487e-01
+50%     -2.876448e-01
+75%     -1.869408e-01
+max      3.236992e+00
+Name: z-score compression-ratio, dtype: float64
