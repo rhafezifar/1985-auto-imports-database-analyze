@@ -14,7 +14,7 @@ header_names = [
 ]
 
 df = pd.read_csv("imports-85.data", names=header_names, na_values="?")
-# *********************************************************************
+# ***************************************************************************************************
 # Question 1
 fourwd = []
 fwd = []
@@ -56,7 +56,7 @@ for row in df.index:
 
 # print(df["price"])
 # print(df.describe())
-# *****************************************************************
+# *****************************************************************************************************
 # Question 2
 
 df_price = pd.DataFrame({"price": df["price"]})
@@ -86,7 +86,7 @@ for row in df_price.index:
         outlier_price2.append(df_price["price"][row])
 # print(f"detecting outliers by IQR: {outlier_price2}")
 
-# *********************************************************************************
+# *************************************************************************************************
 # Question3
 
 stat_length = {"min": [], "max": [], "mean": [], "range": []}
@@ -143,4 +143,71 @@ df["z-score compression-ratio"] = z_score_compression
 # ***********************************************************************************************
 # Question 4
 
-print(df.corrwith(df['price'], axis='index', method="pearson"))
+# **Part 1: Calculation Pearson correlation between price and numeric attributes:**
+# print(df.corrwith(df['price'], axis='index', method="pearson"))
+
+# **Part 2: Calculation Pearson correlation between price and nominal attributes:**
+
+# **Delete price outliers from dataset and save the new dataset(df2):**
+outlier_row = []
+for row in df.index:
+    for price in outlier_price2:
+        if df["price"][row] == price:
+            outlier_row.append(row)
+# print(outlier_row)
+df2 = df.drop(outlier_row)
+newStat_price = df2["price"].describe()
+
+# **categorizing price to 5 equal intervals:**
+price_category = []
+min_price = newStat_price[3]
+max_price = newStat_price[7]
+interval_l = (max_price - min_price) / 5
+
+for p in df2["price"]:
+    if p < min_price + interval_l:
+        price_category.append("Very cheap")
+    elif p < min_price + (2 * interval_l):
+        price_category.append("Cheap")
+    elif p < max_price - (2 * interval_l):
+        price_category.append("Reasonable")
+    elif p < max_price - interval_l:
+        price_category.append("Expensive")
+    else:
+        price_category.append("Very expensive")
+df2["price category"] = price_category
+
+# **Counting each price category:**
+count_price_category = df2["price category"].value_counts()
+# print(count_price_category)
+count_Vcheap = count_price_category[0]
+count_cheap = count_price_category[1]
+count_reasonable = count_price_category[2]
+count_expensive = count_price_category[3]
+count_Vexpensive = count_price_category[4]
+
+count_all = df2.count()[0]
+# print("count all:", count_all)
+# **Calculating observation and expected number for one attribute:**
+# a = df2.groupby('price category')["fuel-type"].value_counts()
+# print(a)
+# print(a['Reasonable']['gas'])
+for column in df2.columns:
+    if df2[column].dtypes == object:
+        Chi2 = 0
+        a = df2.groupby('price category')[column].value_counts()
+        for price_cat_name in count_price_category.index:
+            # print(price_cat_name)
+            sum_price_in_cat = count_price_category[price_cat_name]
+            count_fuel_type = df2[column].value_counts()
+            for fuel_count_name in count_fuel_type.index:
+                # print(fuel_count_name)
+                sum_other_field = count_fuel_type[fuel_count_name]
+                try:
+                    Obs = a[price_cat_name][fuel_count_name]
+                except KeyError:
+                    Obs = 0
+                Exp = (sum_price_in_cat * sum_other_field) / count_all
+                Chi2 += (Obs - Exp)**2 / Exp
+        print("unique of attribute", df2[column].describe()[1])
+        print(f"X^2 for (price category, {column}): {Chi2} (Degree of freedom: {(df2[column].describe()[1]-1) * 4})")
